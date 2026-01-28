@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"bytes"
+	crypto_rand "crypto/rand"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 type GoogleChatMessage struct {
@@ -94,7 +95,9 @@ func readPhrases(filename string) ([]string, error) {
 }
 
 func selectRandomPhrase(phrases []string) string {
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	var seed int64
+	binary.Read(crypto_rand.Reader, binary.BigEndian, &seed)
+	r := rand.New(rand.NewSource(seed))
 	return phrases[r.Intn(len(phrases))]
 }
 
